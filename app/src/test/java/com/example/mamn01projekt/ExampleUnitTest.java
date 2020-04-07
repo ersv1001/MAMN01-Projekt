@@ -1,4 +1,4 @@
-package com.example.projectbackup;
+package com.example.mamn01projekt;
 
 import org.junit.Test;
 
