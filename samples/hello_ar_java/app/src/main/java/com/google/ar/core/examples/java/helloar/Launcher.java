@@ -17,4 +17,9 @@ public class Launcher extends AppCompatActivity {
         Intent intent = new Intent(this, HelloArActivity.class);
         startActivity(intent);
     }
+
+    public void openGallery(View view){
+        Intent intent = new Intent(this, Gallery.class);
+        startActivity(intent);
+    }
 }
