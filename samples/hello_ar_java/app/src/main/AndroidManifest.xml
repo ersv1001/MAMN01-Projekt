@@ -8,6 +8,8 @@
  This tag indicates that this application requires ARCore.  This results in the application
        only being visible in the Google Play Store on devices that support ARCore.
     -->
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
@@ -22,8 +24,14 @@
         android:theme="@style/Theme.AppCompat.Light"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
+<<<<<<< HEAD
         <activity android:name=".ArCamera"></activity>
         <activity android:name=".arTesting" />
+=======
+        <activity android:name=".Gallery">
+
+        </activity>
+>>>>>>> fca694e0af6c00e0b67fd25cbde592e0999ae5f1
         <activity
             android:name=".Launcher"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -33,6 +41,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
+=======
+        <activity
+            android:name=".HelloArActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+>>>>>>> fca694e0af6c00e0b67fd25cbde592e0999ae5f1
         <!--
  This tag indicates that this application requires ARCore.  This results in the Google Play
          Store downloading and installing ARCore along with the application.
