@@ -14,7 +14,7 @@ public class Launcher extends AppCompatActivity {
     }
 
     public void openCamera(View view){
-        Intent intent = new Intent(this, HelloArActivity.class);
+        Intent intent = new Intent(this, ArCamera.class);
         startActivity(intent);
     }
 }
