@@ -20,6 +20,7 @@ import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+
 /**
  * This is an example activity that uses the Sceneform UX package to make common AR tasks easier.
  */
@@ -28,7 +29,7 @@ public class ArCamera extends AppCompatActivity {
     private static final double MIN_OPENGL_VERSION = 3.0;
 
     private ArFragment arFragment;
-    private ViewRenderable andyRenderable;
+    private ViewRenderable pictureRenderable;
 
     @Override
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -48,11 +49,11 @@ public class ArCamera extends AppCompatActivity {
         ViewRenderable.builder()
                 .setView(this, R.layout.testfile)
                 .build()
-                .thenAccept(renderable -> andyRenderable = renderable);
+                .thenAccept(renderable -> pictureRenderable = renderable);
 
         arFragment.setOnTapArPlaneListener(
                 (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
-                    if (andyRenderable == null) {
+                    if (pictureRenderable == null) {
                         return;
                     }
 
@@ -65,7 +66,7 @@ public class ArCamera extends AppCompatActivity {
                     TransformableNode andy = new TransformableNode(arFragment.getTransformationSystem());
                     andy.setParent(anchorNode);
                     andy.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
-                    andy.setRenderable(andyRenderable);
+                    andy.setRenderable(pictureRenderable);
                     andy.select();
                 });
     }
