@@ -31,7 +31,6 @@
         android:layout_height="87dp"
         android:layout_marginTop="76dp"
         android:background="@color/button"
-        android:drawableEnd=""
         android:drawableTop="@drawable/add"
         android:onClick="openGallery"
         android:text="@string/add_poster"
