@@ -7,23 +7,46 @@
     tools:context=".Gallery">
 
     <ImageView
-        android:id="@+id/importedPic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        android:id="@+id/importedPic0"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        app:layout_constraintBottom_toTopOf="@+id/importedPic1"
+        app:layout_constraintEnd_toStartOf="@+id/openCam"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
         android:id="@+id/openCam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginStart="80dp"
         android:onClick="onTakePicture"
-        android:text="New picture"
-        app:layout_constraintBottom_toTopOf="@+id/importedPic"
+        android:text="+ "
+        app:layout_constraintBottom_toTopOf="@+id/importedPic2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/importedPic0"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/importedPic1"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/importedPic2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/importedPic0"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <ImageView
+        android:id="@+id/importedPic2"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginStart="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/importedPic1"
+        app:layout_constraintTop_toBottomOf="@+id/openCam"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
 </android.support.constraint.ConstraintLayout>

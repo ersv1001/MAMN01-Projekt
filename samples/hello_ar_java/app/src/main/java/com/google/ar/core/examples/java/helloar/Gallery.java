@@ -17,30 +17,52 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Gallery extends AppCompatActivity {
-    ImageView importedPic;
+    ImageView[] importedPics = new ImageView[3];
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private int nbrPic = 0;
+    private int pics = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        importedPic = (ImageView) findViewById(R.id.importedPic);
+        importedPics[0] = (ImageView) findViewById(R.id.importedPic0);
+        importedPics[1] = (ImageView) findViewById(R.id.importedPic1);
+        importedPics[2] = (ImageView) findViewById(R.id.importedPic2);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkLoadedPics();
+    }
+
+    private void checkLoadedPics() {
+        for(int i = 0; i<3; i++){
+
+            Bitmap bitmap = new ImageSaver(getApplicationContext()).
+                    setFileName("img" + i + ".png").
+                    setDirectoryName("images").
+                    load();
+            importedPics[i].setImageBitmap(bitmap);
+
+        }
     }
 
     public void onTakePicture(View view){
-        dispatchTakePictureIntent();
+            dispatchTakePictureIntent();
     }
 
     private void dispatchTakePictureIntent(){
-        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePicIntent.resolveActivity(getPackageManager()) != null){
-            startActivityForResult(takePicIntent, REQUEST_IMAGE_CAPTURE);
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
-    }
+
 
 
 
@@ -49,16 +71,17 @@ public class Gallery extends AppCompatActivity {
         if(reqCode == REQUEST_IMAGE_CAPTURE && resCode == RESULT_OK){
             Bundle extras = data.getExtras();
             Bitmap imgBitmap = (Bitmap) extras.get("data");
+            String name = "img" + pics + ".png";
             new ImageSaver(getApplicationContext()).
-                    setFileName("img" + nbrPic + ".png").
+                    setFileName(name).
                     setDirectoryName("images").
                     save(imgBitmap);
             Bitmap bitmap = new ImageSaver(getApplicationContext()).
-                    setFileName("img" + nbrPic + ".png").
+                    setFileName(name).
                     setDirectoryName("images").
                     load();
-            importedPic.setImageBitmap(bitmap);
-            nbrPic++;
+            importedPics[pics].setImageBitmap(bitmap);
+            pics++;
         }
     }
 }
