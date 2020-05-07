@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Gallery extends AppCompatActivity {
     ImageView[] importedPics = new ImageView[3];
@@ -31,16 +30,17 @@ public class Gallery extends AppCompatActivity {
         importedPics[0] = (ImageView) findViewById(R.id.importedPic0);
         importedPics[1] = (ImageView) findViewById(R.id.importedPic1);
         importedPics[2] = (ImageView) findViewById(R.id.importedPic2);
+        fetchLoadedPics();
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkLoadedPics();
+        fetchLoadedPics();
     }
 
-    private void checkLoadedPics() {
+    private void fetchLoadedPics() {
         for(int i = 0; i<3; i++){
 
             Bitmap bitmap = new ImageSaver(getApplicationContext()).
@@ -50,6 +50,18 @@ public class Gallery extends AppCompatActivity {
             importedPics[i].setImageBitmap(bitmap);
 
         }
+    }
+
+    public void onClear(View view){
+    for (int i =0; i<importedPics.length; i++){
+        String picture = "img"+i+".png";
+        new ImageSaver(getApplicationContext()).
+                setFileName(picture).
+                setDirectoryName("images").
+                deleteFile();
+        importedPics[i].setImageResource(0);
+    }
+    pics = 0;
     }
 
     public void onTakePicture(View view){
@@ -68,7 +80,11 @@ public class Gallery extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int reqCode, int resCode, Intent data){
+
         if(reqCode == REQUEST_IMAGE_CAPTURE && resCode == RESULT_OK){
+            if(pics == 3){
+                pics = 0;
+            }
             Bundle extras = data.getExtras();
             Bitmap imgBitmap = (Bitmap) extras.get("data");
             String name = "img" + pics + ".png";
@@ -105,6 +121,11 @@ class ImageSaver {
     public ImageSaver setExternal(boolean external) {
         this.external = external;
         return this;
+    }
+
+    public boolean deleteFile(){
+        File file = createFile();
+        return file.delete();
     }
 
     public ImageSaver setDirectoryName(String directoryName) {
@@ -146,7 +167,7 @@ class ImageSaver {
         return new File(directory, fileName);
     }
 
-    private File getAlbumStorageDir(String albumName) {
+    File getAlbumStorageDir(String albumName) {
         return new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), albumName);
     }
