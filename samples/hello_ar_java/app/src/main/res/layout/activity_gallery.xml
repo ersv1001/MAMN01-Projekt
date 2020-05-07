@@ -23,6 +23,8 @@
         android:layout_marginStart="80dp"
         android:onClick="onTakePicture"
         android:text="+ "
+        android:textSize="25sp"
+        android:background="@color/button"
         app:layout_constraintBottom_toTopOf="@+id/importedPic2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/importedPic0"
