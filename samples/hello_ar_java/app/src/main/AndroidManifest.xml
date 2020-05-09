@@ -4,6 +4,8 @@
     package="com.google.ar.core.examples.java.helloar">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!--
  This tag indicates that this application requires ARCore.  This results in the application
        only being visible in the Google Play Store on devices that support ARCore.
@@ -27,7 +29,8 @@
         <activity android:name=".ArCamera">
 
         </activity>
-        <activity android:name=".Gallery">
+        <activity android:name=".Gallery"
+            android:exported="true">
 
         </activity>
         <activity
