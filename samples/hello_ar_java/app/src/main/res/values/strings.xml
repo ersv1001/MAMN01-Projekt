@@ -19,4 +19,5 @@
     <string name="group_name">SIXTH SENSE</string>
     <string name="add_poster">ADD POSTERS TO YOUR GALLERY</string>
     <string name="desc_text">Create your own personalised poster wall</string>
+    <string name="fit_image_to_scan">fit_image_to_scan</string>
 </resources>
