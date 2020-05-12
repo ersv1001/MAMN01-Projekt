@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,7 +34,9 @@ public class Gallery extends AppCompatActivity {
     ImageView[] importedPics = new ImageView[6];
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     ArrayList<ImageView> selected = new ArrayList<>();
-    Button deleteBtn;
+    Button deleteBtn, clearBtn;
+    ImageButton addBtn;
+    Vibrator vibe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +49,30 @@ public class Gallery extends AppCompatActivity {
         importedPics[3] = findViewById(R.id.importedPic3);
         importedPics[4] = findViewById(R.id.importedPic4);
         importedPics[5] = findViewById(R.id.importedPic5);
+
+        vibe = (Vibrator) Gallery.this.getSystemService(Context.VIBRATOR_SERVICE);
         deleteBtn = findViewById(R.id.singleDelBtn);
+        clearBtn = findViewById(R.id.delBtn);
+        addBtn = findViewById(R.id.openCam);
         deleteBtn.setEnabled(false);
+        deleteBtn.setOnClickListener(view -> {
+            vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
+            onDelete(view);
+        });
+        clearBtn.setOnClickListener(view -> {
+            vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
+            onClear(view);
+        });
+        addBtn.setOnClickListener(view -> {
+            vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
+            onTakePicture(view);
+        });
         fetchLoadedPics();
     }
 
     private void setListener(ImageView imgView) {
         imgView.setOnClickListener(v -> {
+            vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
             Drawable highlight = ResourcesCompat.getDrawable(getResources(), R.drawable.highlight, null);
             if (!selected.contains(imgView)) {
                 imgView.setBackground(highlight);
@@ -139,7 +160,6 @@ public class Gallery extends AppCompatActivity {
         }
     }
 
-    //TODO: Change pics to findEmptySpot().
     @Override
     protected void onActivityResult(int reqCode, int resCode, Intent data) {
 
@@ -168,7 +188,6 @@ public class Gallery extends AppCompatActivity {
         }
     }
 
-    //TODO: DOESN'T WORK YET
     private int findEmptySpot() {
         for (int i = 0; i < importedPics.length; i++) {
             if (new ImageSaver(getApplicationContext()).
