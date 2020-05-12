@@ -30,9 +30,14 @@ public final class SnackbarHelper {
   private enum DismissBehavior { HIDE, SHOW, FINISH };
   private int maxLines = 2;
   private String lastMessage = "";
+  private static final SnackbarHelper THE_INSTANCE = new SnackbarHelper();
 
   public boolean isShowing() {
     return messageSnackbar != null;
+  }
+
+  public static SnackbarHelper getInstance() {
+      return THE_INSTANCE;
   }
 
   /** Shows a snackbar with a given message. */
