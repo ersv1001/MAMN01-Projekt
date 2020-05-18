@@ -17,8 +17,13 @@
 package com.google.ar.core.examples.java.common.helpers;
 
         import android.content.Context;
+        import android.graphics.Bitmap;
+        import android.graphics.BitmapFactory;
+        import android.media.Image;
         import android.net.Uri;
         import android.util.Log;
+        import android.widget.ImageView;
+
         import com.google.ar.core.AugmentedImage;
         import com.google.ar.core.examples.java.helloar.R;
         import com.google.ar.sceneform.AnchorNode;
@@ -28,6 +33,7 @@ package com.google.ar.core.examples.java.common.helpers;
         import com.google.ar.sceneform.rendering.ModelRenderable;
         import com.google.ar.sceneform.rendering.ViewRenderable;
 
+        import java.io.File;
         import java.util.concurrent.CompletableFuture;
 
 /**
@@ -76,9 +82,11 @@ public class AugmentedImageNode extends AnchorNode {
 //                            .build();
 //        }
 
-
+        ImageView testView = new ImageView(context);
+        testView.setImageResource(R.drawable.testpainting);
+        //testView.setRotation(-90); // Bilden roteras åt rätt håll men hamnar fortfarande på högra sidan av den skannade bilden
         TestRenderable = ViewRenderable.builder()
-                .setView(context, R.layout.testfile)
+                .setView(context, testView)
                 .build();
     }
 
@@ -128,7 +136,9 @@ public class AugmentedImageNode extends AnchorNode {
 
         centerNode.setParent(this);
         //centerNode.setLocalPosition(localPosition);
-        centerNode.setLocalRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -90f));
+        //centerNode.setLocalRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -90f));
+        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -90f));
+
         centerNode.setRenderable(TestRenderable.getNow(null));
 
 
