@@ -17,14 +17,20 @@
 
 package com.google.ar.core.examples.java.common.helpers;
 
+        import android.Manifest;
         import android.app.ActivityManager;
         import android.content.Context;
+        import android.content.Intent;
+        import android.content.pm.PackageManager;
         import android.content.res.AssetManager;
         import android.graphics.Bitmap;
         import android.graphics.BitmapFactory;
         import android.os.Build;
         import android.os.Bundle;
+        import android.provider.MediaStore;
         import android.support.annotation.Nullable;
+        import android.support.v4.app.ActivityCompat;
+        import android.support.v4.content.ContextCompat;
         import android.util.Log;
         import android.view.LayoutInflater;
         import android.view.View;
@@ -51,7 +57,7 @@ public class AugmentedImageFragment extends ArFragment {
     // Add a Uri that stores the path of the target image chosen from
     // device storage.
     private android.net.Uri chosenImageUri = null;
-    private static final int REQUEST_CODE_CHOOSE_IMAGE = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     // Do a runtime check for the OpenGL level available at runtime to avoid Sceneform crashing the
     // application.
@@ -80,7 +86,7 @@ public class AugmentedImageFragment extends ArFragment {
         }
 
 
-        chooseNewImage();
+        onTakePicture();
     }
 
     @Override
@@ -103,13 +109,30 @@ public class AugmentedImageFragment extends ArFragment {
 
     // Borde göras om till att man bara tar en bild direkt och då kan man
     // även sätta in gränser för hur bra bild man valt med hjälp av Arcoreimg tool
-    void chooseNewImage() {
-        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_GET_CONTENT);
-        intent.addCategory(android.content.Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        startActivityForResult(
-                android.content.Intent.createChooser(intent, "Select target augmented image"),
-                REQUEST_CODE_CHOOSE_IMAGE);
+//    void chooseNewImage() {
+//        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_GET_CONTENT);
+//        intent.addCategory(android.content.Intent.CATEGORY_OPENABLE);
+//        intent.setType("image/*");
+//        startActivityForResult(
+//                android.content.Intent.createChooser(intent, "Select target augmented image"),
+//                REQUEST_CODE_CHOOSE_IMAGE);
+//    }
+
+    public void onTakePicture() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 110);
+            dispatchTakePictureIntent();
+        } else {
+            dispatchTakePictureIntent();
+        }
+
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     // Add a new onActivityResult function to handle the user-selected
@@ -120,7 +143,7 @@ public class AugmentedImageFragment extends ArFragment {
         super.onActivityResult(requestCode, resultCode, data);
         try {
             if (resultCode == android.app.Activity.RESULT_OK) {
-                if (requestCode == REQUEST_CODE_CHOOSE_IMAGE) {
+                if (requestCode == REQUEST_IMAGE_CAPTURE) {
                     // Get the Uri of target image
                     chosenImageUri = data.getData();
 

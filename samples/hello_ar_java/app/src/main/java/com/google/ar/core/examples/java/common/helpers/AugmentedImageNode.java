@@ -25,6 +25,8 @@ package com.google.ar.core.examples.java.common.helpers;
         import android.widget.ImageView;
 
         import com.google.ar.core.AugmentedImage;
+        import com.google.ar.core.examples.java.helloar.Gallery;
+        import com.google.ar.core.examples.java.helloar.ImageSaver;
         import com.google.ar.core.examples.java.helloar.R;
         import com.google.ar.sceneform.AnchorNode;
         import com.google.ar.sceneform.Node;
@@ -82,11 +84,29 @@ public class AugmentedImageNode extends AnchorNode {
 //                            .build();
 //        }
 
-        ImageView testView = new ImageView(context);
-        testView.setImageResource(R.drawable.testpainting);
-        //testView.setRotation(-90); // Bilden roteras åt rätt håll men hamnar fortfarande på högra sidan av den skannade bilden
+        ImageView[] imageViews = new ImageView[6];
+        for(int i = 0; i < 6; i++){
+            imageViews[i] = new ImageView(context);
+        }
+
+        int amountOfImages = Gallery.amountOfImages;
+        Log.d("AMOUNT", "amount: " + amountOfImages);
+
+        for (int i = 0; i < amountOfImages; i++) {
+            int currentPicture = 2131230814 + i;
+            Bitmap bitmap = new ImageSaver(context).
+                    setFileName(currentPicture + ".png").
+                    setDirectoryName("images").
+                    load();
+            if (bitmap == null) {
+                bitmap = BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.pictureplaceholder);
+            }
+            imageViews[i].setImageBitmap(bitmap);
+        }
+
         TestRenderable = ViewRenderable.builder()
-                .setView(context, testView)
+                .setView(context, imageViews[0])
                 .build();
     }
 
@@ -136,8 +156,8 @@ public class AugmentedImageNode extends AnchorNode {
 
         centerNode.setParent(this);
         //centerNode.setLocalPosition(localPosition);
-        //centerNode.setLocalRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -90f));
-        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -90f));
+        centerNode.setLocalRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 90f));
+        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 0f));
 
         centerNode.setRenderable(TestRenderable.getNow(null));
 

@@ -24,8 +24,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class Gallery extends AppCompatActivity {
     Button deleteBtn, clearBtn;
     ImageButton addBtn;
     Vibrator vibe;
+    public static int amountOfImages = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,7 @@ public class Gallery extends AppCompatActivity {
     }
 
     private void fetchLoadedPics() {
+        amountOfImages = 0;
         for (int i = 0; i < importedPics.length; i++) {
             Bitmap bitmap = new ImageSaver(getApplicationContext()).
                     setFileName(importedPics[i].getId() + ".png").
@@ -106,9 +110,12 @@ public class Gallery extends AppCompatActivity {
                         R.drawable.pictureplaceholder);
 
             } else {
+                amountOfImages++;
                 setListener(importedPics[i]);
+
             }
             importedPics[i].setImageBitmap(bitmap);
+
         }
     }
 
@@ -126,6 +133,7 @@ public class Gallery extends AppCompatActivity {
         selected.clear();
         deleteBtn.setEnabled(false);
         fetchLoadedPics();
+        amountOfImages = 0;
     }
 
     public void onDelete(View view) {
@@ -141,6 +149,7 @@ public class Gallery extends AppCompatActivity {
         }
         selected.clear();
         deleteBtn.setEnabled(false);
+        amountOfImages--;
     }
 
     public void onTakePicture(View view) {
@@ -184,6 +193,8 @@ public class Gallery extends AppCompatActivity {
                     load();
             importedPics[spot].setImageBitmap(bitmap);
             setListener(importedPics[spot]);
+            amountOfImages++;
+            Log.d("AMOUNT", "Amount: " + amountOfImages);
             }
         }
     }
@@ -202,106 +213,3 @@ public class Gallery extends AppCompatActivity {
 }
 
 
-class ImageSaver {
-
-    private String directoryName = "images";
-    private String fileName = "image.png";
-    private Context context;
-    private boolean external;
-
-    public ImageSaver(Context context) {
-        this.context = context;
-    }
-
-    public ImageSaver setFileName(String fileName) {
-        this.fileName = fileName;
-        return this;
-    }
-
-    public ImageSaver setExternal(boolean external) {
-        this.external = external;
-        return this;
-    }
-
-    public boolean deleteFile(){
-        File file = createFile();
-        return file.delete();
-    }
-
-    public ImageSaver setDirectoryName(String directoryName) {
-        this.directoryName = directoryName;
-        return this;
-    }
-
-    public void save(Bitmap bitmapImage) {
-        FileOutputStream fileOutputStream = null;
-        try {
-            fileOutputStream = new FileOutputStream(createFile());
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fileOutputStream != null) {
-                    fileOutputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @NonNull
-    private File createFile() {
-        File directory;
-        if(external){
-            directory = getAlbumStorageDir(directoryName);
-        }
-        else {
-            directory = context.getDir(directoryName, Context.MODE_PRIVATE);
-        }
-        if(!directory.exists() && !directory.mkdirs()){
-            Log.e("ImageSaver","Error creating directory " + directory);
-        }
-
-        return new File(directory, fileName);
-    }
-
-    File getAlbumStorageDir(String albumName) {
-        return new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
-    }
-
-    public static boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-    public static boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-    }
-
-    public Bitmap load() {
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(createFile());
-            return BitmapFactory.decodeStream(inputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-
-
-}
