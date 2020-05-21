@@ -20,4 +20,7 @@
     <string name="add_poster">ADD POSTERS TO YOUR GALLERY</string>
     <string name="desc_text">Create your own personalised poster wall</string>
     <string name="fit_image_to_scan">fit_image_to_scan</string>
+    <string name="step_one">1. Add your posters to the Gallery</string>
+    <string name="step_two">2. Open camera and scan your reference point </string>
+    <string name="step_three">3. Create your poster wall!</string>
 </resources>
