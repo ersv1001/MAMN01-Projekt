@@ -34,6 +34,8 @@ package com.google.ar.core.examples.java.common.helpers;
         import com.google.ar.sceneform.math.Vector3;
         import com.google.ar.sceneform.rendering.ModelRenderable;
         import com.google.ar.sceneform.rendering.ViewRenderable;
+        import com.google.ar.sceneform.ux.ArFragment;
+        import com.google.ar.sceneform.ux.TransformableNode;
 
         import java.io.File;
         import java.util.concurrent.CompletableFuture;
@@ -46,43 +48,22 @@ package com.google.ar.core.examples.java.common.helpers;
 public class AugmentedImageNode extends AnchorNode {
 
     private static final String TAG = "AugmentedImageNode";
+    private int compNbr;
+    private ArFragment arFragment;
 
     // The augmented image represented by this node.
     private AugmentedImage image;
-    private CompletableFuture<ViewRenderable> TestRenderable;
 
-//    // Models of the 4 corners.  We use completable futures here to simplify
-//    // the error handling and asynchronous loading.  The loading is started with the
-//    // first construction of an instance, and then used when the image is set.
-//    private static CompletableFuture<ModelRenderable> ulCorner;
-//    private static CompletableFuture<ModelRenderable> urCorner;
-//    private static CompletableFuture<ModelRenderable> lrCorner;
-//    private static CompletableFuture<ModelRenderable> llCorner;
+    private CompletableFuture<ViewRenderable> RenderablePicture1;
+    private CompletableFuture<ViewRenderable> RenderablePicture2;
+    private CompletableFuture<ViewRenderable> RenderablePicture3;
+    private CompletableFuture<ViewRenderable> RenderablePicture4;
+    private CompletableFuture<ViewRenderable> RenderablePicture5;
+    private CompletableFuture<ViewRenderable> RenderablePicture6;
 
 
-    public AugmentedImageNode(Context context) {
-
-        // Går kanske att utnyttja liknande lösning för att lösa tavelväggen.
-
-        // Upon construction, start loading the models for the corners of the frame.
-//        if (ulCorner == null) {
-//            ulCorner =
-//                    ModelRenderable.builder()
-//                            .setSource(context, Uri.parse("models/frame_upper_left.sfb"))
-//                            .build();
-//            urCorner =
-//                    ModelRenderable.builder()
-//                            .setSource(context, Uri.parse("models/frame_upper_right.sfb"))
-//                            .build();
-//            llCorner =
-//                    ModelRenderable.builder()
-//                            .setSource(context, Uri.parse("models/frame_lower_left.sfb"))
-//                            .build();
-//            lrCorner =
-//                    ModelRenderable.builder()
-//                            .setSource(context, Uri.parse("models/frame_lower_right.sfb"))
-//                            .build();
-//        }
+    public AugmentedImageNode(Context context, ArFragment arFragment) {
+        this.arFragment = arFragment;
 
         ImageView[] imageViews = new ImageView[6];
         for(int i = 0; i < 6; i++){
@@ -105,9 +86,31 @@ public class AugmentedImageNode extends AnchorNode {
             imageViews[i].setImageBitmap(bitmap);
         }
 
-        TestRenderable = ViewRenderable.builder()
-                .setView(context, imageViews[0])
-                .build();
+        if (RenderablePicture1 == null) {
+            RenderablePicture1 = ViewRenderable.builder()
+                    .setView(context, imageViews[0])
+                    .build();
+
+            RenderablePicture2 = ViewRenderable.builder()
+                    .setView(context, imageViews[1])
+                    .build();
+
+//            RenderablePicture3 = ViewRenderable.builder()
+//                    .setView(context, imageViews[2])
+//                    .build();
+//
+//            RenderablePicture4 = ViewRenderable.builder()
+//                    .setView(context, imageViews[3])
+//                    .build();
+//
+//            RenderablePicture5 = ViewRenderable.builder()
+//                    .setView(context, imageViews[4])
+//                    .build();
+//
+//            RenderablePicture6 = ViewRenderable.builder()
+//                    .setView(context, imageViews[5])
+//                    .build();
+        }
     }
 
     /**
@@ -120,21 +123,11 @@ public class AugmentedImageNode extends AnchorNode {
     public void setImage(AugmentedImage image) {
         this.image = image;
 
-        // Tillhör exempel lösningen som kanske går att använda.
-
-//        // If any of the models are not loaded, then recurse when all are loaded.
-//        if (!ulCorner.isDone() || !urCorner.isDone() || !llCorner.isDone() || !lrCorner.isDone()) {
-//            CompletableFuture.allOf(ulCorner, urCorner, llCorner, lrCorner)
-//                    .thenAccept((Void aVoid) -> setImage(image))
-//                    .exceptionally(
-//                            throwable -> {
-//                                Log.e(TAG, "Exception loading", throwable);
-//                                return null;
-//                            });
-//        }
-
-        if (!TestRenderable.isDone()) {
-            CompletableFuture.allOf(TestRenderable)
+        //Kan vara så att vi måste göra något dynamiskt här när man har olika många bilder
+        //if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone() || !RenderablePicture3.isDone() || !RenderablePicture4.isDone() || !RenderablePicture5.isDone() || !RenderablePicture6.isDone()) {
+        if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone()) {
+            //CompletableFuture.allOf(RenderablePicture1, RenderablePicture2, RenderablePicture3, RenderablePicture4, RenderablePicture5, RenderablePicture6)
+            CompletableFuture.allOf(RenderablePicture1, RenderablePicture2)
                     .thenAccept((Void aVoid) -> setImage(image))
                     .exceptionally(
                             throwable -> {
@@ -147,31 +140,79 @@ public class AugmentedImageNode extends AnchorNode {
         // Set the anchor based on the center of the image.
         setAnchor(image.createAnchor(image.getCenterPose()));
 
-        // TODO Rätt rotation på tavlan.
+        //TODO: Gör en tavelvägg!  Kopiera hela Picture 1 när den är perfekt till resten
+        // men ändra namnet på renderable och sen ändra localposition på alla
 
-        Node centerNode = new Node();
+        // TODO: Bryt ut till metod: Ändra localposition men någon slags vektor med olika positions för alla 6 bilder.
+
+        TransformableNode centerNode;
         Vector3 localPosition = new Vector3();
 
-        //localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
+        // Picture 1
+
+        centerNode = new TransformableNode(arFragment.getTransformationSystem());
+        localPosition.set(image.getExtentX() * -1, 0.0f, -1 * image.getExtentZ());
 
         centerNode.setParent(this);
-        //centerNode.setLocalPosition(localPosition);
-        centerNode.setLocalRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 90f));
-        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 0f));
-
-        centerNode.setRenderable(TestRenderable.getNow(null));
+        centerNode.setLocalPosition(localPosition);
+        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        centerNode.setRenderable(RenderablePicture1.getNow(null));
 
 
         //centerNode.localScale = Vector3(image.extentX * 15f, image.extentZ * 30f, 1.0f)
 
 
+        // Picture 2
 
-        // Går kanske att utnyttja liknande lösning för att lösa tavelväggen.
+        centerNode = new TransformableNode(arFragment.getTransformationSystem());
+        localPosition.set(image.getExtentX() * 1, 0.0f, 1 * image.getExtentZ());
 
-//        // Make the 4 corner nodes.
-//        Vector3 localPosition = new Vector3();
-//        Node cornerNode;
+        centerNode.setParent(this);
+        centerNode.setLocalPosition(localPosition);
+        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        centerNode.setRenderable(RenderablePicture2.getNow(null));
+
+//        // Picture 3
 //
+//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
+//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
+//
+//        centerNode.setParent(this);
+//        centerNode.setLocalPosition(localPosition);
+//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+//
+//        // Picture 4
+//
+//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
+//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
+//
+//        centerNode.setParent(this);
+//        centerNode.setLocalPosition(localPosition);
+//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+//
+//        // Picture 5
+//
+//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
+//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
+//
+//        centerNode.setParent(this);
+//        centerNode.setLocalPosition(localPosition);
+//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+//
+//        // Picture 6
+//
+//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
+//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
+//
+//        centerNode.setParent(this);
+//        centerNode.setLocalPosition(localPosition);
+//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+
+
 //        // Upper left corner.
 //        localPosition.set(-0.5f * image.getExtentX(), 0.0f, -0.5f * image.getExtentZ());
 //        cornerNode = new Node();
@@ -185,20 +226,13 @@ public class AugmentedImageNode extends AnchorNode {
 //        cornerNode.setParent(this);
 //        cornerNode.setLocalPosition(localPosition);
 //        cornerNode.setRenderable(urCorner.getNow(null));
-//
-//        // Lower right corner.
-//        localPosition.set(0.5f * image.getExtentX(), 0.0f, 0.5f * image.getExtentZ());
-//        cornerNode = new Node();
-//        cornerNode.setParent(this);
-//        cornerNode.setLocalPosition(localPosition);
-//        cornerNode.setRenderable(lrCorner.getNow(null));
-//
-//        // Lower left corner.
-//        localPosition.set(-0.5f * image.getExtentX(), 0.0f, 0.5f * image.getExtentZ());
-//        cornerNode = new Node();
-//        cornerNode.setParent(this);
-//        cornerNode.setLocalPosition(localPosition);
-//        cornerNode.setRenderable(llCorner.getNow(null));
+    }
+
+    public void setComposition(int compNbr){
+        this.compNbr = compNbr;
+
+        //TODO: Kalla en funktion som ändrar localposition här?
+        //Kanske måste Skapa en ny node för att gamla bilder ska försvinna
     }
 
     public AugmentedImage getImage() {

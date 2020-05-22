@@ -1,61 +1,28 @@
 package com.google.ar.core.examples.java.helloar;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
-import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
-import com.google.ar.core.HitResult;
-import com.google.ar.core.Plane;
-import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.examples.java.common.helpers.AugmentedImageNode;
 import com.google.ar.core.examples.java.common.helpers.SnackbarHelper;
-import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.FrameTime;
-import com.google.ar.sceneform.math.Quaternion;
-import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO clean up code :)
-/**
- * This is an example activity that uses the Sceneform UX package to make common AR tasks easier.
- */
-//public class ArCamera extends AppCompatActivity {
-//    private static final String TAG = ArCamera.class.getSimpleName();
-//    private static final double MIN_OPENGL_VERSION = 3.0;
-//
-//    private ArFragment arFragment;
-//    private ViewRenderable pictureRenderable;
-//
-//    @Override
-//    @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
-//    // CompletableFuture requires api level 24
-//    // FutureReturnValueIgnored is not valid
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        if (!checkIsSupportedDeviceOrFinish(this)) {
-//            return;
-//        }
-//
-//        setContentView(R.layout.activity_arcamera);
+
 //        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
 //
 //
@@ -83,54 +50,57 @@ import java.util.Map;
 //                    andy.select();
 //                });
 //    }
-//
-//    /**
-//     * Returns false and displays an error message if Sceneform can not run, true if Sceneform can run
-//     * on this device.
-//     *
-//     * <p>Sceneform requires Android N on the device as well as OpenGL 3.0 capabilities.
-//     *
-//     * <p>Finishes the activity if Sceneform can not run
-//     */
-//    public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
-//        if (Build.VERSION.SDK_INT < VERSION_CODES.N) {
-//            Log.e(TAG, "Sceneform requires Android N or later");
-//            Toast.makeText(activity, "Sceneform requires Android N or later", Toast.LENGTH_LONG).show();
-//            activity.finish();
-//            return false;
-//        }
-//        String openGlVersionString =
-//                ((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE))
-//                        .getDeviceConfigurationInfo()
-//                        .getGlEsVersion();
-//        if (Double.parseDouble(openGlVersionString) < MIN_OPENGL_VERSION) {
-//            Log.e(TAG, "Sceneform requires OpenGL ES 3.0 later");
-//            Toast.makeText(activity, "Sceneform requires OpenGL ES 3.0 or later", Toast.LENGTH_LONG)
-//                    .show();
-//            activity.finish();
-//            return false;
-//        }
-//        return true;
-//    }
-//}
 
-public class ArCamera extends AppCompatActivity {
+public class ArCamera extends AppCompatActivity implements SensorEventListener {
 
     private ArFragment arFragment;
     private ImageView fitToScanView;
 
-    // Augmented image and its associated center pose anchor, keyed by the augmented image in
-    // the database.
+    // Augmented image and its associated center pose anchor, keyed by the augmented image in the database.
     private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
+
+    //TODO//////////////////////////////////////// Flick
+
+    private float mAccelNoGrav;
+    private float mAccelWithGrav;
+    private float mLastAccelWithGrav;
+
+    ArrayList<Float> z = new ArrayList<>();
+
+    public static float finalZ;
+
+    public static boolean shakeIsHappening;
+    public static float highZ;
+    public static float lowZ;
+    public static boolean flick;
+    public static boolean pull;
+    public static int beatnumber = 0;
+
+    //TODO////////////////////////////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arcamera);
+
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         fitToScanView = findViewById(R.id.image_view_fit_to_scan);
-
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
+
+        //TODO//////////////////////////////////////// Flick
+
+        SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        if (!manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST)) {
+            // Nånting som talar om att det inte funkar? Annars ta bort
+        }
+
+        mAccelNoGrav = 0.00f;
+        mAccelWithGrav = SensorManager.GRAVITY_EARTH;
+        mLastAccelWithGrav = SensorManager.GRAVITY_EARTH;
+
+        //TODO////////////////////////////////////////////////////
     }
 
     @Override
@@ -170,7 +140,7 @@ public class ArCamera extends AppCompatActivity {
 
                     // Create a new anchor for newly found images.
                     if (!augmentedImageMap.containsKey(augmentedImage)) {
-                        AugmentedImageNode node = new AugmentedImageNode(getApplicationContext());
+                        AugmentedImageNode node = new AugmentedImageNode(getApplicationContext(), arFragment);
                         node.setImage(augmentedImage);
                         augmentedImageMap.put(augmentedImage, node);
                         arFragment.getArSceneView().getScene().addChild(node);
@@ -182,5 +152,79 @@ public class ArCamera extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    //TODO//////////////////////////////////////// Flick
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+//
+//        float x = sensorEvent.values[0];
+//        float y = sensorEvent.values[1];
+//        z.add((sensorEvent.values[2])-SensorManager.GRAVITY_EARTH);
+//        mLastAccelWithGrav = mAccelWithGrav;
+//        mAccelWithGrav = (float) Math.sqrt(x * x + y * y + z.indexOf(z.size()-1) * z.indexOf(z.size()-1));
+//        float delta = mAccelWithGrav - mLastAccelWithGrav;
+//        mAccelNoGrav = mAccelNoGrav * 0.9f + delta; // Low-cut filter
+//
+//        if (mAccelNoGrav > 8.5) {
+//            shakeIsHappening = true;
+//
+//            z.clear();
+//
+//            if  (z.indexOf(z.size()-2) > z.indexOf(z.size()-1)) {
+//                clickresults.append(" Z shrinking" + z);
+//            } else if (z.indexOf(z.size()-2) < z.indexOf(z.size()-1)) {
+//                clickresults.append(" Z growing" + z);
+//            }
+//
+//        }
+//
+//
+//        if (shakeIsHappening == true && mAccelNoGrav < 2) {
+//
+//            finalZ = z.get(z.size()-1);
+//            highZ= z.get(z.size()-1);
+//            lowZ= z.get(z.size()-1);
+//            for (int i = 0; i < z.size(); i++) {
+//                if (z.get(i) > highZ) {
+//                    highZ = z.get(i);
+//                } else if ((z.get(i) < lowZ)) {
+//                    lowZ = z.get(i);
+//                }
+//                if (highZ==finalZ) {
+//                    flick = true;
+//                    pull = false;
+//                } else if (lowZ==finalZ) {
+//                    flick = false;
+//                    pull = true;
+//
+//                }
+//
+//                // En till höger och en till vänster
+//                if (flick) {
+//
+//                    //kalla metod här
+//                    beatnumber++;
+//
+//                    shakeIsHappening = false;
+//                }
+//
+//                if(pull) {
+//
+//                    beatnumber--;
+//
+//                    shakeIsHappening = false;
+//                }
+//
+//                z.clear();
+//
+//            } }
+//
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

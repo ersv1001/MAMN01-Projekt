@@ -101,12 +101,6 @@ public class AugmentedImageFragment extends ArFragment {
         return view;
     }
 
-
-    // TODO Implementera Olivias imageSaver lösning istället.
-
-    // Add a new function that prompts the user to choose an image from
-    // device storage.
-
     // Borde göras om till att man bara tar en bild direkt och då kan man
     // även sätta in gränser för hur bra bild man valt med hjälp av Arcoreimg tool
 //    void chooseNewImage() {
@@ -162,6 +156,7 @@ public class AugmentedImageFragment extends ArFragment {
     @Override
     protected Config getSessionConfiguration(Session session) {
         Config config = super.getSessionConfiguration(session);
+        config.setFocusMode(Config.FocusMode.AUTO);
         if (!setupAugmentedImageDatabase(config, session)) {
             SnackbarHelper.getInstance()
                     .showError(getActivity(), "Could not setup augmented image database");
