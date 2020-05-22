@@ -21,6 +21,7 @@ package com.google.ar.core.examples.java.common.helpers;
         import android.graphics.BitmapFactory;
         import android.media.Image;
         import android.net.Uri;
+        import android.support.v4.content.res.ResourcesCompat;
         import android.util.Log;
         import android.widget.ImageView;
 
@@ -68,13 +69,15 @@ public class AugmentedImageNode extends AnchorNode {
         ImageView[] imageViews = new ImageView[6];
         for(int i = 0; i < 6; i++){
             imageViews[i] = new ImageView(context);
+            imageViews[i].setForeground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.picture_frame, null));
+
         }
 
         int amountOfImages = Gallery.amountOfImages;
         Log.d("AMOUNT", "amount: " + amountOfImages);
 
         for (int i = 0; i < amountOfImages; i++) {
-            int currentPicture = 2131230814 + i;
+            int currentPicture = 2131230815 + i;
             Bitmap bitmap = new ImageSaver(context).
                     setFileName(currentPicture + ".png").
                     setDirectoryName("images").
@@ -212,20 +215,6 @@ public class AugmentedImageNode extends AnchorNode {
 //        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
 //        centerNode.setRenderable(RenderablePicture1.getNow(null));
 
-
-//        // Upper left corner.
-//        localPosition.set(-0.5f * image.getExtentX(), 0.0f, -0.5f * image.getExtentZ());
-//        cornerNode = new Node();
-//        cornerNode.setParent(this);
-//        cornerNode.setLocalPosition(localPosition);
-//        cornerNode.setRenderable(ulCorner.getNow(null));
-//
-//        // Upper right corner.
-//        localPosition.set(0.5f * image.getExtentX(), 0.0f, -0.5f * image.getExtentZ());
-//        cornerNode = new Node();
-//        cornerNode.setParent(this);
-//        cornerNode.setLocalPosition(localPosition);
-//        cornerNode.setRenderable(urCorner.getNow(null));
     }
 
     public void setComposition(int compNbr){
