@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.google.ar.core.AugmentedImage;
@@ -15,41 +16,13 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.core.examples.java.common.helpers.AugmentedImageNode;
 import com.google.ar.core.examples.java.common.helpers.SnackbarHelper;
 import com.google.ar.sceneform.FrameTime;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.ux.ArFragment;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-
-//        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
-//
-//
-//        ViewRenderable.builder()
-//                .setView(this, R.layout.testfile)
-//                .build()
-//                .thenAccept(renderable -> pictureRenderable = renderable);
-//
-//        arFragment.setOnTapArPlaneListener(
-//                (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
-//                    if (pictureRenderable == null) {
-//                        return;
-//                    }
-//
-//                    // Create the Anchor.
-//                    Anchor anchor = hitResult.createAnchor();
-//                    AnchorNode anchorNode = new AnchorNode(anchor);
-//                    anchorNode.setParent(arFragment.getArSceneView().getScene());
-//
-//                    // Create the transformable andy and add it to the anchor.
-//                    TransformableNode andy = new TransformableNode(arFragment.getTransformationSystem());
-//                    andy.setParent(anchorNode);
-//                    andy.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
-//                    andy.setRenderable(pictureRenderable);
-//                    andy.select();
-//                });
-//    }
 
 public class ArCamera extends AppCompatActivity implements SensorEventListener {
 
@@ -58,6 +31,7 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
 
     // Augmented image and its associated center pose anchor, keyed by the augmented image in the database.
     private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
+    private AugmentedImageNode node;
 
     //TODO//////////////////////////////////////// Flick
 
@@ -74,7 +48,7 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
     public static float lowZ;
     public static boolean flick;
     public static boolean pull;
-    public static int beatnumber = 0;
+    public static int compNbr = 0;
 
     //TODO////////////////////////////////////////////////////
 
@@ -87,6 +61,7 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         fitToScanView = findViewById(R.id.image_view_fit_to_scan);
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
 
+        node = new AugmentedImageNode(getApplicationContext(), arFragment);
         //TODO//////////////////////////////////////// Flick
 
         SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -130,20 +105,20 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
                 case PAUSED:
                     // When an image is in PAUSED state, but the camera is not PAUSED, it has been detected,
                     // but not yet tracked.
-                    String text = "Detected Image " + augmentedImage.getIndex();
+                    String text = "Image has been detected, keep scanning to reveal posters";
                     SnackbarHelper.getInstance().showMessage(this, text);
                     break;
 
                 case TRACKING:
                     // Have to switch to UI Thread to update View.
                     fitToScanView.setVisibility(View.GONE);
-
+                    SnackbarHelper.getInstance().hide(this);
                     // Create a new anchor for newly found images.
                     if (!augmentedImageMap.containsKey(augmentedImage)) {
-                        AugmentedImageNode node = new AugmentedImageNode(getApplicationContext(), arFragment);
                         node.setImage(augmentedImage);
                         augmentedImageMap.put(augmentedImage, node);
                         arFragment.getArSceneView().getScene().addChild(node);
+
                     }
                     break;
 
@@ -158,69 +133,81 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-//
-//        float x = sensorEvent.values[0];
-//        float y = sensorEvent.values[1];
-//        z.add((sensorEvent.values[2])-SensorManager.GRAVITY_EARTH);
-//        mLastAccelWithGrav = mAccelWithGrav;
-//        mAccelWithGrav = (float) Math.sqrt(x * x + y * y + z.indexOf(z.size()-1) * z.indexOf(z.size()-1));
-//        float delta = mAccelWithGrav - mLastAccelWithGrav;
-//        mAccelNoGrav = mAccelNoGrav * 0.9f + delta; // Low-cut filter
-//
-//        if (mAccelNoGrav > 8.5) {
-//            shakeIsHappening = true;
-//
-//            z.clear();
-//
-//            if  (z.indexOf(z.size()-2) > z.indexOf(z.size()-1)) {
-//                clickresults.append(" Z shrinking" + z);
-//            } else if (z.indexOf(z.size()-2) < z.indexOf(z.size()-1)) {
-//                clickresults.append(" Z growing" + z);
-//            }
-//
-//        }
-//
-//
-//        if (shakeIsHappening == true && mAccelNoGrav < 2) {
-//
-//            finalZ = z.get(z.size()-1);
-//            highZ= z.get(z.size()-1);
-//            lowZ= z.get(z.size()-1);
-//            for (int i = 0; i < z.size(); i++) {
-//                if (z.get(i) > highZ) {
-//                    highZ = z.get(i);
-//                } else if ((z.get(i) < lowZ)) {
-//                    lowZ = z.get(i);
-//                }
-//                if (highZ==finalZ) {
-//                    flick = true;
-//                    pull = false;
-//                } else if (lowZ==finalZ) {
-//                    flick = false;
-//                    pull = true;
-//
-//                }
-//
-//                // En till höger och en till vänster
-//                if (flick) {
-//
-//                    //kalla metod här
-//                    beatnumber++;
-//
-//                    shakeIsHappening = false;
-//                }
-//
-//                if(pull) {
-//
-//                    beatnumber--;
-//
-//                    shakeIsHappening = false;
-//                }
-//
-//                z.clear();
-//
-//            } }
-//
+
+        float x = sensorEvent.values[0];
+        float y = sensorEvent.values[1];
+        z.add((sensorEvent.values[2])-SensorManager.GRAVITY_EARTH);
+        mLastAccelWithGrav = mAccelWithGrav;
+        mAccelWithGrav = (float) Math.sqrt(x * x + y * y + z.indexOf(z.size()-1) * z.indexOf(z.size()-1));
+        float delta = mAccelWithGrav - mLastAccelWithGrav;
+        mAccelNoGrav = mAccelNoGrav * 0.9f + delta; // Low-cut filter
+
+        if (mAccelNoGrav > 8.5) {
+            shakeIsHappening = true;
+
+            z.clear();
+
+            /*if  (z.indexOf(z.size()-2) > z.indexOf(z.size()-1)) {
+                clickresults.append(" Z shrinking" + z);
+            } else if (z.indexOf(z.size()-2) < z.indexOf(z.size()-1)) {
+                clickresults.append(" Z growing" + z);
+            }*/
+
+        }
+
+
+        if (shakeIsHappening == true && mAccelNoGrav < 2) {
+
+            finalZ = z.get(z.size()-1);
+            highZ= z.get(z.size()-1);
+            lowZ= z.get(z.size()-1);
+            for (int i = 0; i < z.size(); i++) {
+                if (z.get(i) > highZ) {
+                    highZ = z.get(i);
+                } else if ((z.get(i) < lowZ)) {
+                    lowZ = z.get(i);
+                }
+                if (highZ==finalZ) {
+                    flick = true;
+                    pull = false;
+                } else if (lowZ==finalZ) {
+                    flick = false;
+                    pull = true;
+
+                }
+
+                // En till höger och en till vänster
+                if (flick) {
+
+                    //kalla metod här
+                    if (compNbr == 2){
+                        compNbr = 0;
+                    } else {
+                        compNbr++;
+                    }
+                    node.setComposition(compNbr);
+                    Log.d("BEATNUMBER", "bn: " + compNbr);
+                    Log.d("ARRAYTEST", "Höger");
+                    shakeIsHappening = false;
+
+                }
+
+                if(pull) {
+                    if (compNbr == 0){
+                        compNbr = 2;
+                    } else{
+                        compNbr--;
+                    }
+                    //node.setComposition(compNbr);
+                    Log.d("ARRAYTEST", "Vänster");
+                    shakeIsHappening = false;
+                }
+
+                z.clear();
+
+            } }
+
+
     }
 
     @Override
