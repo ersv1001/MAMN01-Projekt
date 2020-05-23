@@ -16,7 +16,6 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.core.examples.java.common.helpers.AugmentedImageNode;
 import com.google.ar.core.examples.java.common.helpers.SnackbarHelper;
 import com.google.ar.sceneform.FrameTime;
-import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.ux.ArFragment;
 
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
     public static int compNbr = 0;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +54,6 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
 
         node = new AugmentedImageNode(getApplicationContext(), arFragment);
-        //TODO//////////////////////////////////////// Flick
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -66,8 +63,6 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         mAccelNoGrav = 0.00f;
         mAccelWithGrav = SensorManager.GRAVITY_EARTH;
         mLastAccelWithGrav = SensorManager.GRAVITY_EARTH;
-
-        //TODO////////////////////////////////////////////////////
     }
 
     @Override

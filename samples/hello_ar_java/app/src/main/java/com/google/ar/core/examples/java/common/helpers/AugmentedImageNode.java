@@ -49,11 +49,19 @@ package com.google.ar.core.examples.java.common.helpers;
 public class AugmentedImageNode extends AnchorNode {
 
     private static final String TAG = "AugmentedImageNode";
-    private int compNbr;
     private ArFragment arFragment;
 
     // The augmented image represented by this node.
     private AugmentedImage image;
+
+    TransformableNode nodes[] = new TransformableNode[6];
+
+    Vector3 localPosition1[] = new Vector3[3];
+    Vector3 localPosition2[] = new Vector3[3];
+    Vector3 localPosition3[] = new Vector3[3];
+    Vector3 localPosition4[] = new Vector3[3];
+    Vector3 localPosition5[] = new Vector3[3];
+    Vector3 localPosition6[] = new Vector3[3];
 
     private CompletableFuture<ViewRenderable> RenderablePicture1;
     private CompletableFuture<ViewRenderable> RenderablePicture2;
@@ -98,10 +106,10 @@ public class AugmentedImageNode extends AnchorNode {
                     .setView(context, imageViews[1])
                     .build();
 
-//            RenderablePicture3 = ViewRenderable.builder()
-//                    .setView(context, imageViews[2])
-//                    .build();
-//
+            RenderablePicture3 = ViewRenderable.builder()
+                    .setView(context, imageViews[2])
+                    .build();
+
 //            RenderablePicture4 = ViewRenderable.builder()
 //                    .setView(context, imageViews[3])
 //                    .build();
@@ -128,9 +136,9 @@ public class AugmentedImageNode extends AnchorNode {
 
         //Kan vara så att vi måste göra något dynamiskt här när man har olika många bilder
         //if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone() || !RenderablePicture3.isDone() || !RenderablePicture4.isDone() || !RenderablePicture5.isDone() || !RenderablePicture6.isDone()) {
-        if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone()) {
+        if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone() || !RenderablePicture3.isDone()) {
             //CompletableFuture.allOf(RenderablePicture1, RenderablePicture2, RenderablePicture3, RenderablePicture4, RenderablePicture5, RenderablePicture6)
-            CompletableFuture.allOf(RenderablePicture1, RenderablePicture2)
+            CompletableFuture.allOf(RenderablePicture1, RenderablePicture2, RenderablePicture3)
                     .thenAccept((Void aVoid) -> setImage(image))
                     .exceptionally(
                             throwable -> {
@@ -143,48 +151,52 @@ public class AugmentedImageNode extends AnchorNode {
         // Set the anchor based on the center of the image.
         setAnchor(image.createAnchor(image.getCenterPose()));
 
-        //TODO: Gör en tavelvägg!  Kopiera hela Picture 1 när den är perfekt till resten
-        // men ändra namnet på renderable och sen ändra localposition på alla
-
-        // TODO: Bryt ut till metod: Ändra localposition men någon slags vektor med olika positions för alla 6 bilder.
-
-        TransformableNode centerNode;
-        Vector3 localPosition = new Vector3();
-
         // Picture 1
 
-        centerNode = new TransformableNode(arFragment.getTransformationSystem());
-        localPosition.set(image.getExtentX() * -1, 0.0f, -1 * image.getExtentZ());
+        TransformableNode PictureNode1 = new TransformableNode(arFragment.getTransformationSystem());
+        nodes[0] = PictureNode1;
 
-        centerNode.setParent(this);
-        centerNode.setLocalPosition(localPosition);
-        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-        centerNode.setRenderable(RenderablePicture1.getNow(null));
+        localPosition1[0] = new Vector3(image.getExtentX() * 1f, 0f, 2f * image.getExtentZ());
+        localPosition1[1] = new Vector3(image.getExtentX() * 1f, 0f, 3f * image.getExtentZ());
+        localPosition1[2] = new Vector3(image.getExtentX() * 1f, 0f, 4f * image.getExtentZ());
 
-
-        //centerNode.localScale = Vector3(image.extentX * 15f, image.extentZ * 30f, 1.0f)
-
+        PictureNode1.setParent(this);
+        PictureNode1.getRotationController().setEnabled(false);
+        PictureNode1.getTranslationController().setEnabled(false);
+        PictureNode1.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode1.setRenderable(RenderablePicture1.getNow(null));
 
         // Picture 2
 
-        centerNode = new TransformableNode(arFragment.getTransformationSystem());
-        localPosition.set(image.getExtentX() * 1, 0.0f, 1 * image.getExtentZ());
+        TransformableNode PictureNode2 = new TransformableNode(arFragment.getTransformationSystem());
+        nodes[1] = PictureNode2;
 
-        centerNode.setParent(this);
-        centerNode.setLocalPosition(localPosition);
-        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-        centerNode.setRenderable(RenderablePicture2.getNow(null));
+        localPosition2[0] = new Vector3(image.getExtentX() * 2f, 0f, 1f * image.getExtentZ());
+        localPosition2[1] = new Vector3(image.getExtentX() * 3f, 0f, 1f * image.getExtentZ());
+        localPosition2[2] = new Vector3(image.getExtentX() * 4f, 0f, 1f * image.getExtentZ());
 
-//        // Picture 3
-//
-//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
-//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
-//
-//        centerNode.setParent(this);
-//        centerNode.setLocalPosition(localPosition);
-//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture1.getNow(null));
-//
+        PictureNode2.setParent(this);
+        PictureNode2.getRotationController().setEnabled(false);
+        PictureNode2.getTranslationController().setEnabled(false);
+        PictureNode2.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode2.setLocalScale(new Vector3(0.1f, 0.1f, 1.0f));
+        PictureNode2.setRenderable(RenderablePicture2.getNow(null));
+
+        // Picture 3
+
+        TransformableNode PictureNode3 = new TransformableNode(arFragment.getTransformationSystem());
+        nodes[2] = PictureNode3;
+
+        localPosition3[0] = new Vector3(image.getExtentX() * 0f, 0f, 0f * image.getExtentZ());
+        localPosition3[1] = new Vector3(image.getExtentX() * 0f, 0f, 0f * image.getExtentZ());
+        localPosition3[2] = new Vector3(image.getExtentX() * 0f, 0f, 0f * image.getExtentZ());
+
+        PictureNode3.setParent(this);
+        PictureNode3.getRotationController().setEnabled(false);
+        PictureNode3.getTranslationController().setEnabled(false);
+        PictureNode3.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode3.setRenderable(RenderablePicture3.getNow(null));
+
 //        // Picture 4
 //
 //        centerNode = new TransformableNode(arFragment.getTransformationSystem());
@@ -193,7 +205,7 @@ public class AugmentedImageNode extends AnchorNode {
 //        centerNode.setParent(this);
 //        centerNode.setLocalPosition(localPosition);
 //        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+//        centerNode.setRenderable(RenderablePicture4.getNow(null));
 //
 //        // Picture 5
 //
@@ -203,7 +215,7 @@ public class AugmentedImageNode extends AnchorNode {
 //        centerNode.setParent(this);
 //        centerNode.setLocalPosition(localPosition);
 //        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+//        centerNode.setRenderable(RenderablePicture5.getNow(null));
 //
 //        // Picture 6
 //
@@ -213,15 +225,19 @@ public class AugmentedImageNode extends AnchorNode {
 //        centerNode.setParent(this);
 //        centerNode.setLocalPosition(localPosition);
 //        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture1.getNow(null));
+//        centerNode.setRenderable(RenderablePicture6.getNow(null));
 
     }
 
     public void setComposition(int compNbr){
-        this.compNbr = compNbr;
 
-        //TODO: Kalla en funktion som ändrar localposition här?
-        //Kanske måste Skapa en ny node för att gamla bilder ska försvinna
+        nodes[0].setLocalPosition(localPosition1[compNbr]);
+        nodes[1].setLocalPosition(localPosition2[compNbr]);
+        nodes[2].setLocalPosition(localPosition3[compNbr]);
+
+//        PictureNode4.setLocalPosition(localPosition4[cmpNbr]);
+//        PictureNode5.setLocalPosition(localPosition5[cmpNbr]);
+//        PictureNode6.setLocalPosition(localPosition6[cmpNbr]);
     }
 
     public AugmentedImage getImage() {

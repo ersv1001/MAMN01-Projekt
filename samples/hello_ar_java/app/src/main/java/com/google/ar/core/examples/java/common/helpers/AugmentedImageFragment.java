@@ -84,8 +84,6 @@ public class AugmentedImageFragment extends ArFragment {
             SnackbarHelper.getInstance()
                     .showError(getActivity(), "Sceneform requires OpenGL ES 3.0 or later");
         }
-
-
         onTakePicture();
     }
 
@@ -101,8 +99,6 @@ public class AugmentedImageFragment extends ArFragment {
         return view;
     }
 
-    // Borde göras om till att man bara tar en bild direkt och då kan man
-    // även sätta in gränser för hur bra bild man valt med hjälp av Arcoreimg tool
 //    void chooseNewImage() {
 //        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_GET_CONTENT);
 //        intent.addCategory(android.content.Intent.CATEGORY_OPENABLE);
@@ -130,8 +126,7 @@ public class AugmentedImageFragment extends ArFragment {
     }
 
     // Add a new onActivityResult function to handle the user-selected
-    // image, and to reconfigure the ARCore session in the internal
-    // ArSceneView.
+    // image, and to reconfigure the ARCore session in the internal ArSceneView.
     @Override
     public void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -157,6 +152,7 @@ public class AugmentedImageFragment extends ArFragment {
     protected Config getSessionConfiguration(Session session) {
         Config config = super.getSessionConfiguration(session);
         config.setFocusMode(Config.FocusMode.AUTO);
+        //config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
         if (!setupAugmentedImageDatabase(config, session)) {
             SnackbarHelper.getInstance()
                     .showError(getActivity(), "Could not setup augmented image database");
