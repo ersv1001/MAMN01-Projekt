@@ -33,24 +33,18 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
     private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
     private AugmentedImageNode node;
 
-    //TODO//////////////////////////////////////// Flick
 
     private float mAccelNoGrav;
     private float mAccelWithGrav;
     private float mLastAccelWithGrav;
-
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
     ArrayList<Float> z = new ArrayList<>();
 
-    public static float finalZ;
-
     public static boolean shakeIsHappening;
-    public static float highZ;
-    public static float lowZ;
-    public static boolean flick;
-    public static boolean pull;
     public static int compNbr = 0;
 
-    //TODO////////////////////////////////////////////////////
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +58,10 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         node = new AugmentedImageNode(getApplicationContext(), arFragment);
         //TODO//////////////////////////////////////// Flick
 
-        SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        Sensor accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
-        if (!manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST)) {
-            // Nånting som talar om att det inte funkar? Annars ta bort
-        }
 
         mAccelNoGrav = 0.00f;
         mAccelWithGrav = SensorManager.GRAVITY_EARTH;
@@ -84,6 +76,13 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         if (augmentedImageMap.isEmpty()) {
             fitToScanView.setVisibility(View.VISIBLE);
         }
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        sensorManager.unregisterListener(this, accelerometer);
     }
 
     /**
@@ -129,8 +128,6 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         }
     }
 
-    //TODO//////////////////////////////////////// Flick
-
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
@@ -144,70 +141,30 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
 
         if (mAccelNoGrav > 8.5) {
             shakeIsHappening = true;
-
-            z.clear();
-
-            /*if  (z.indexOf(z.size()-2) > z.indexOf(z.size()-1)) {
-                clickresults.append(" Z shrinking" + z);
-            } else if (z.indexOf(z.size()-2) < z.indexOf(z.size()-1)) {
-                clickresults.append(" Z growing" + z);
-            }*/
-
         }
 
 
         if (shakeIsHappening == true && mAccelNoGrav < 2) {
-
-            finalZ = z.get(z.size()-1);
-            highZ= z.get(z.size()-1);
-            lowZ= z.get(z.size()-1);
-            for (int i = 0; i < z.size(); i++) {
-                if (z.get(i) > highZ) {
-                    highZ = z.get(i);
-                } else if ((z.get(i) < lowZ)) {
-                    lowZ = z.get(i);
+            if (sensorEvent.values[0] > 4) {
+                if (compNbr == 2) {
+                    compNbr = 0;
+                } else {
+                    compNbr++;
                 }
-                if (highZ==finalZ) {
-                    flick = true;
-                    pull = false;
-                } else if (lowZ==finalZ) {
-                    flick = false;
-                    pull = true;
-
+                node.setComposition(compNbr);
+                Log.d("ARRAYTEST", "Vänster" + sensorEvent.values[0]);
+                shakeIsHappening = false;
+            } else if (sensorEvent.values[0] < -4) {
+                if (compNbr == 0) {
+                    compNbr = 2;
+                } else {
+                    compNbr--;
                 }
-
-                // En till höger och en till vänster
-                if (flick) {
-
-                    //kalla metod här
-                    if (compNbr == 2){
-                        compNbr = 0;
-                    } else {
-                        compNbr++;
-                    }
-                    node.setComposition(compNbr);
-                    Log.d("BEATNUMBER", "bn: " + compNbr);
-                    Log.d("ARRAYTEST", "Höger");
-                    shakeIsHappening = false;
-
-                }
-
-                if(pull) {
-                    if (compNbr == 0){
-                        compNbr = 2;
-                    } else{
-                        compNbr--;
-                    }
-                    //node.setComposition(compNbr);
-                    Log.d("ARRAYTEST", "Vänster");
-                    shakeIsHappening = false;
-                }
-
-                z.clear();
-
-            } }
-
-
+                //node.setComposition(compNbr);
+                Log.d("ARRAYTEST", "Höger" + sensorEvent.values[1]);
+                shakeIsHappening = false;
+            }
+        }
     }
 
     @Override
