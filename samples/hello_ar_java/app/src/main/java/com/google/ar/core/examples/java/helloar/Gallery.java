@@ -2,6 +2,7 @@ package com.google.ar.core.examples.java.helloar;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,11 +62,11 @@ public class Gallery extends AppCompatActivity {
         deleteBtn.setEnabled(false);
         deleteBtn.setOnClickListener(view -> {
             vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
-            onDelete(view);
+            delBtnPressed(view);
         });
         clearBtn.setOnClickListener(view -> {
             vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
-            onClear(view);
+            clearBtnPressed(view);
         });
         addBtn.setOnClickListener(view -> {
             vibe.vibrate(80);//80 represents the milliseconds (the duration of the vibration)
@@ -119,6 +121,33 @@ public class Gallery extends AppCompatActivity {
         }
     }
 
+    public void delBtnPressed(View view){
+        new AlertDialog.Builder(Gallery.this)
+                .setMessage(R.string.delete)
+                .setTitle(R.string.delete_title)
+                .setCancelable(false)
+                .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        onDelete(view);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    public void clearBtnPressed(View view){
+        new AlertDialog.Builder(Gallery.this)
+                .setMessage(R.string.delete)
+                .setTitle(R.string.delete_title)
+                .setCancelable(false)
+                .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        onClear(view);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
     public void onClear(View view) {
         for (int i = 0; i < importedPics.length; i++) {
             String picture = importedPics[i].getId() + ".png";

@@ -20,6 +20,12 @@
     <string name="add_poster">ADD POSTERS TO YOUR GALLERY</string>
     <string name="desc_text">Create your own personalised poster wall</string>
     <string name="fit_image_to_scan">fit_image_to_scan</string>
+    <string name="cancel">Cancel</string>
+    <string name="fire">Yes</string>
+    <string name="delete_title">Delete</string>
+    <string name="clear_title">Clear all</string>
+    <string name="delete">Are you sure you want to delete the chosen pictures?</string>
+    <string name="clear">Are you sure you want to remove all of the pictures in the gallery?</string>
     <string name="info">
         1. Add your posters to the gallery
         \n2. Open camera and scan your reference point
