@@ -1,13 +1,16 @@
 package com.google.ar.core.examples.java.helloar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -66,9 +69,17 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         mAccelWithGrav = SensorManager.GRAVITY_EARTH;
         mLastAccelWithGrav = SensorManager.GRAVITY_EARTH;
 
-        Toast.makeText(getApplicationContext(),
-                "To change between patterns, flick your phone!",
-                Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(getApplicationContext(),
+                "Take a photo of the picture you want to use as a reference point!" +
+                        "\n \nUse a reference point with a lot of detail.", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+
+        new CountDownTimer(9000, 1000)
+        {
+            public void onTick(long millisUntilFinished) {toast.show();}
+            public void onFinish() {toast.show();}
+        }.start();
     }
 
     @Override
@@ -78,9 +89,6 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
             fitToScanView.setVisibility(View.VISIBLE);
         }
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        Toast.makeText(getApplicationContext(),
-                "To change between patterns, flick your phone!",
-                Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -108,7 +116,7 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
                 case PAUSED:
                     // When an image is in PAUSED state, but the camera is not PAUSED, it has been detected,
                     // but not yet tracked.
-                    String text = "Image has been detected, keep scanning to reveal posters";
+                    String text = "Image has been detected, keep scanning to reveal posters!";
                     SnackbarHelper.getInstance().showMessage(this, text);
                     break;
 
@@ -119,14 +127,18 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
                     // Create a new anchor for newly found images.
                     if (!augmentedImageMap.containsKey(augmentedImage)) {
                         node.setImage(augmentedImage);
+                        node.setComposition(0);
                         augmentedImageMap.put(augmentedImage, node);
                         arFragment.getArSceneView().getScene().addChild(node);
-
+                        Toast.makeText(getApplicationContext(),
+                                "To change between patterns, flick your phone to either side!",
+                                Toast.LENGTH_LONG).show();
                     }
                     break;
 
                 case STOPPED:
                     augmentedImageMap.remove(augmentedImage);
+                    SnackbarHelper.getInstance().hide(this);
                     break;
             }
         }
@@ -164,7 +176,7 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
                 } else {
                     compNbr--;
                 }
-                //node.setComposition(compNbr);
+                node.setComposition(compNbr);
                 Log.d("ARRAYTEST", "Höger" + sensorEvent.values[1]);
                 shakeIsHappening = false;
             }
@@ -174,5 +186,10 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode,data);
     }
 }

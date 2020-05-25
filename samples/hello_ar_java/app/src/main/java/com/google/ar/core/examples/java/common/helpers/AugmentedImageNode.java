@@ -110,17 +110,17 @@ public class AugmentedImageNode extends AnchorNode {
                     .setView(context, imageViews[2])
                     .build();
 
-//            RenderablePicture4 = ViewRenderable.builder()
-//                    .setView(context, imageViews[3])
-//                    .build();
-//
-//            RenderablePicture5 = ViewRenderable.builder()
-//                    .setView(context, imageViews[4])
-//                    .build();
-//
-//            RenderablePicture6 = ViewRenderable.builder()
-//                    .setView(context, imageViews[5])
-//                    .build();
+            RenderablePicture4 = ViewRenderable.builder()
+                    .setView(context, imageViews[3])
+                    .build();
+
+            RenderablePicture5 = ViewRenderable.builder()
+                    .setView(context, imageViews[4])
+                    .build();
+
+            RenderablePicture6 = ViewRenderable.builder()
+                    .setView(context, imageViews[5])
+                    .build();
         }
     }
 
@@ -134,11 +134,8 @@ public class AugmentedImageNode extends AnchorNode {
     public void setImage(AugmentedImage image) {
         this.image = image;
 
-        //Kan vara så att vi måste göra något dynamiskt här när man har olika många bilder
-        //if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone() || !RenderablePicture3.isDone() || !RenderablePicture4.isDone() || !RenderablePicture5.isDone() || !RenderablePicture6.isDone()) {
-        if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone() || !RenderablePicture3.isDone()) {
-            //CompletableFuture.allOf(RenderablePicture1, RenderablePicture2, RenderablePicture3, RenderablePicture4, RenderablePicture5, RenderablePicture6)
-            CompletableFuture.allOf(RenderablePicture1, RenderablePicture2, RenderablePicture3)
+        if (!RenderablePicture1.isDone() || !RenderablePicture2.isDone() || !RenderablePicture3.isDone() || !RenderablePicture4.isDone() || !RenderablePicture5.isDone() || !RenderablePicture6.isDone()) {
+            CompletableFuture.allOf(RenderablePicture1, RenderablePicture2, RenderablePicture3, RenderablePicture4, RenderablePicture5, RenderablePicture6)
                     .thenAccept((Void aVoid) -> setImage(image))
                     .exceptionally(
                             throwable -> {
@@ -156,76 +153,102 @@ public class AugmentedImageNode extends AnchorNode {
         TransformableNode PictureNode1 = new TransformableNode(arFragment.getTransformationSystem());
         nodes[0] = PictureNode1;
 
-        localPosition1[0] = new Vector3(image.getExtentX() * 1f, 0f, 2f * image.getExtentZ());
-        localPosition1[1] = new Vector3(image.getExtentX() * 1f, 0f, 3f * image.getExtentZ());
-        localPosition1[2] = new Vector3(image.getExtentX() * 1f, 0f, 4f * image.getExtentZ());
+        localPosition1[0] = new Vector3(image.getExtentX() * 0.6f, 0f, 0.6f * image.getExtentZ());
+        localPosition1[1] = new Vector3(image.getExtentX() * -0.5f, 0f, 0.4f * image.getExtentZ());
+        localPosition1[2] = new Vector3(image.getExtentX() * 0.05f, 0f, 0.3f * image.getExtentZ());
 
         PictureNode1.setParent(this);
         PictureNode1.getRotationController().setEnabled(false);
         PictureNode1.getTranslationController().setEnabled(false);
         PictureNode1.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode1.setLocalScale(new Vector3(3.0f, 3.0f, 3.0f));
         PictureNode1.setRenderable(RenderablePicture1.getNow(null));
+        arFragment.getTransformationSystem().getSelectionVisualizer().removeSelectionVisual(PictureNode1);
 
         // Picture 2
 
         TransformableNode PictureNode2 = new TransformableNode(arFragment.getTransformationSystem());
         nodes[1] = PictureNode2;
 
-        localPosition2[0] = new Vector3(image.getExtentX() * 2f, 0f, 1f * image.getExtentZ());
-        localPosition2[1] = new Vector3(image.getExtentX() * 3f, 0f, 1f * image.getExtentZ());
-        localPosition2[2] = new Vector3(image.getExtentX() * 4f, 0f, 1f * image.getExtentZ());
+        localPosition2[0] = new Vector3(image.getExtentX() * -0.65f, 0f, -0.45f * image.getExtentZ());
+        localPosition2[1] = new Vector3(image.getExtentX() * 0.7f, 0f, 0.7f * image.getExtentZ());
+        localPosition2[2] = new Vector3(image.getExtentX() * 0.5f, 0f, -0.7f * image.getExtentZ());
 
         PictureNode2.setParent(this);
         PictureNode2.getRotationController().setEnabled(false);
         PictureNode2.getTranslationController().setEnabled(false);
         PictureNode2.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-        PictureNode2.setLocalScale(new Vector3(0.1f, 0.1f, 1.0f));
+        PictureNode2.setLocalScale(new Vector3(2.0f, 2.0f, 2.0f));
         PictureNode2.setRenderable(RenderablePicture2.getNow(null));
+        arFragment.getTransformationSystem().getSelectionVisualizer().removeSelectionVisual(PictureNode2);
 
         // Picture 3
 
         TransformableNode PictureNode3 = new TransformableNode(arFragment.getTransformationSystem());
         nodes[2] = PictureNode3;
 
-        localPosition3[0] = new Vector3(image.getExtentX() * 0f, 0f, 0f * image.getExtentZ());
-        localPosition3[1] = new Vector3(image.getExtentX() * 0f, 0f, 0f * image.getExtentZ());
-        localPosition3[2] = new Vector3(image.getExtentX() * 0f, 0f, 0f * image.getExtentZ());
+        localPosition3[0] = new Vector3(image.getExtentX() * 0.5f, 0f, -0.5f * image.getExtentZ());
+        localPosition3[1] = new Vector3(image.getExtentX() * 0.6f, 0f, -0.3f * image.getExtentZ());
+        localPosition3[2] = new Vector3(image.getExtentX() * -0.6f, 0f, -0.6f * image.getExtentZ());
 
         PictureNode3.setParent(this);
         PictureNode3.getRotationController().setEnabled(false);
         PictureNode3.getTranslationController().setEnabled(false);
         PictureNode3.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode3.setLocalScale(new Vector3(3.0f, 3.0f, 3.0f));
         PictureNode3.setRenderable(RenderablePicture3.getNow(null));
+        arFragment.getTransformationSystem().getSelectionVisualizer().removeSelectionVisual(PictureNode3);
 
-//        // Picture 4
-//
-//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
-//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
-//
-//        centerNode.setParent(this);
-//        centerNode.setLocalPosition(localPosition);
-//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture4.getNow(null));
-//
-//        // Picture 5
-//
-//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
-//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
-//
-//        centerNode.setParent(this);
-//        centerNode.setLocalPosition(localPosition);
-//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture5.getNow(null));
-//
-//        // Picture 6
-//
-//        centerNode = new TransformableNode(arFragment.getTransformationSystem());
-//        localPosition.set(image.getExtentX() * 0, 0.0f, 0 * image.getExtentZ());
-//
-//        centerNode.setParent(this);
-//        centerNode.setLocalPosition(localPosition);
-//        centerNode.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
-//        centerNode.setRenderable(RenderablePicture6.getNow(null));
+        // Picture 4
+
+        TransformableNode PictureNode4 = new TransformableNode(arFragment.getTransformationSystem());
+        nodes[3] = PictureNode4;
+
+        localPosition4[0] = new Vector3(image.getExtentX() * -0.45f, 0f, 0.45f * image.getExtentZ());
+        localPosition4[1] = new Vector3(image.getExtentX() * -0.6f, 0f, -0.55f * image.getExtentZ());
+        localPosition4[2] = new Vector3(image.getExtentX() * 0.9f, 0f, 0.4f * image.getExtentZ());
+
+        PictureNode4.setParent(this);
+        PictureNode4.getRotationController().setEnabled(false);
+        PictureNode4.getTranslationController().setEnabled(false);
+        PictureNode4.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode4.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+        PictureNode4.setRenderable(RenderablePicture4.getNow(null));
+        arFragment.getTransformationSystem().getSelectionVisualizer().removeSelectionVisual(PictureNode4);
+
+        // Picture 5
+
+        TransformableNode PictureNode5 = new TransformableNode(arFragment.getTransformationSystem());
+        nodes[4] = PictureNode5;
+
+        localPosition5[0] = new Vector3(image.getExtentX() * -0.45f, 0f, 0.45f * image.getExtentZ());
+        localPosition5[1] = new Vector3(image.getExtentX() * -0.6f, 0f, -0.55f * image.getExtentZ());
+        localPosition5[2] = new Vector3(image.getExtentX() * 0.9f, 0f, 0.4f * image.getExtentZ());
+
+        PictureNode5.setParent(this);
+        PictureNode5.getRotationController().setEnabled(false);
+        PictureNode5.getTranslationController().setEnabled(false);
+        PictureNode5.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode5.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+        PictureNode5.setRenderable(RenderablePicture5.getNow(null));
+        arFragment.getTransformationSystem().getSelectionVisualizer().removeSelectionVisual(PictureNode5);
+
+        // Picture 6
+
+        TransformableNode PictureNode6 = new TransformableNode(arFragment.getTransformationSystem());
+        nodes[5] = PictureNode6;
+
+        localPosition6[0] = new Vector3(image.getExtentX() * -0.45f, 0f, 0.45f * image.getExtentZ());
+        localPosition6[1] = new Vector3(image.getExtentX() * -0.6f, 0f, -0.55f * image.getExtentZ());
+        localPosition6[2] = new Vector3(image.getExtentX() * 0.9f, 0f, 0.4f * image.getExtentZ());
+
+        PictureNode6.setParent(this);
+        PictureNode6.getRotationController().setEnabled(false);
+        PictureNode6.getTranslationController().setEnabled(false);
+        PictureNode6.setWorldRotation(Quaternion.axisAngle(new Vector3(1f, 0f, 0f), -15f));
+        PictureNode6.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+        PictureNode6.setRenderable(RenderablePicture6.getNow(null));
+        arFragment.getTransformationSystem().getSelectionVisualizer().removeSelectionVisual(PictureNode6);
 
     }
 
@@ -234,10 +257,9 @@ public class AugmentedImageNode extends AnchorNode {
         nodes[0].setLocalPosition(localPosition1[compNbr]);
         nodes[1].setLocalPosition(localPosition2[compNbr]);
         nodes[2].setLocalPosition(localPosition3[compNbr]);
-
-//        PictureNode4.setLocalPosition(localPosition4[cmpNbr]);
-//        PictureNode5.setLocalPosition(localPosition5[cmpNbr]);
-//        PictureNode6.setLocalPosition(localPosition6[cmpNbr]);
+        nodes[3].setLocalPosition(localPosition4[compNbr]);
+        nodes[4].setLocalPosition(localPosition5[compNbr]);
+        nodes[5].setLocalPosition(localPosition6[compNbr]);
     }
 
     public AugmentedImage getImage() {

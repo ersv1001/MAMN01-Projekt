@@ -20,7 +20,6 @@ package com.google.ar.core.examples.java.common.helpers;
         import android.Manifest;
         import android.app.ActivityManager;
         import android.content.Context;
-        import android.content.Intent;
         import android.content.pm.PackageManager;
         import android.content.res.AssetManager;
         import android.graphics.Bitmap;
@@ -38,7 +37,6 @@ package com.google.ar.core.examples.java.common.helpers;
         import com.google.ar.core.AugmentedImageDatabase;
         import com.google.ar.core.Config;
         import com.google.ar.core.Session;
-        import com.google.ar.core.examples.java.common.helpers.SnackbarHelper;
         import com.google.ar.sceneform.ux.ArFragment;
         import java.io.IOException;
         import java.io.InputStream;
@@ -56,12 +54,14 @@ public class AugmentedImageFragment extends ArFragment {
 
     // Add a Uri that stores the path of the target image chosen from
     // device storage.
-    private android.net.Uri chosenImageUri = null;
+    public android.net.Uri chosenImageUri = null;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     // Do a runtime check for the OpenGL level available at runtime to avoid Sceneform crashing the
     // application.
     private static final double MIN_OPENGL_VERSION = 3.0;
+
+    Bitmap chosenImageBitmap;
 
     @Override
     public void onAttach(Context context) {
@@ -88,8 +88,7 @@ public class AugmentedImageFragment extends ArFragment {
     }
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // Turn off the plane discovery since we're only looking for images
@@ -105,7 +104,7 @@ public class AugmentedImageFragment extends ArFragment {
 //        intent.setType("image/*");
 //        startActivityForResult(
 //                android.content.Intent.createChooser(intent, "Select target augmented image"),
-//                REQUEST_CODE_CHOOSE_IMAGE);
+//                REQUEST_IMAGE_CAPTURE);
 //    }
 
     public void onTakePicture() {
@@ -115,11 +114,11 @@ public class AugmentedImageFragment extends ArFragment {
         } else {
             dispatchTakePictureIntent();
         }
-
     }
 
     private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        android.content.Intent takePictureIntent = new android.content.Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, "test");
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
@@ -134,7 +133,7 @@ public class AugmentedImageFragment extends ArFragment {
             if (resultCode == android.app.Activity.RESULT_OK) {
                 if (requestCode == REQUEST_IMAGE_CAPTURE) {
                     // Get the Uri of target image
-                    chosenImageUri = data.getData();
+                    chosenImageBitmap = (Bitmap) data.getExtras().get("data");
 
                     // Reconfig ARCore session to use the new image
                     Session arcoreSession = getArSceneView().getSession();
@@ -152,7 +151,7 @@ public class AugmentedImageFragment extends ArFragment {
     protected Config getSessionConfiguration(Session session) {
         Config config = super.getSessionConfiguration(session);
         config.setFocusMode(Config.FocusMode.AUTO);
-        //config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
+        config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
         if (!setupAugmentedImageDatabase(config, session)) {
             SnackbarHelper.getInstance()
                     .showError(getActivity(), "Could not setup augmented image database");
@@ -182,18 +181,19 @@ public class AugmentedImageFragment extends ArFragment {
     }
 
     private Bitmap loadAugmentedImageBitmap(AssetManager assetManager) {
-        if (chosenImageUri == null) {
+        if (chosenImageBitmap == null) {
             try (InputStream is = assetManager.open(DEFAULT_IMAGE_NAME)) {
                 return BitmapFactory.decodeStream(is);
             } catch (IOException e) {
                 Log.e(TAG, "IO exception loading augmented image bitmap.", e);
             }
         } else {
-            try (InputStream is = getContext().getContentResolver().openInputStream(chosenImageUri)) {
-                return BitmapFactory.decodeStream(is);
-            } catch (IOException e) {
-                Log.e(TAG, "IO exception loading augmented image bitmap from storage.", e);
-            }
+            return chosenImageBitmap;
+//            try (InputStream is = getContext().getContentResolver().openInputStream(chosenImageUri)) {
+//                return BitmapFactory.decodeStream(is);
+//            } catch (IOException e) {
+//                Log.e(TAG, "IO exception loading augmented image bitmap from storage.", e);
+//            }
         }
         return null;
     }
