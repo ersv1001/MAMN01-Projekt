@@ -13,7 +13,7 @@
         android:onClick="onTakePicture"
         android:padding="3dp"
         android:layout_margin="16dp"
-        app:srcCompat="@drawable/add"
+        app:srcCompat="@drawable/galadd"
         android:background="@color/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
