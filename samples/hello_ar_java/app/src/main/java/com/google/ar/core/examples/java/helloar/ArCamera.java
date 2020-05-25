@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.core.TrackingState;
@@ -63,6 +65,10 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
         mAccelNoGrav = 0.00f;
         mAccelWithGrav = SensorManager.GRAVITY_EARTH;
         mLastAccelWithGrav = SensorManager.GRAVITY_EARTH;
+
+        Toast.makeText(getApplicationContext(),
+                "To change between patterns, flick your phone!",
+                Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -72,6 +78,9 @@ public class ArCamera extends AppCompatActivity implements SensorEventListener {
             fitToScanView.setVisibility(View.VISIBLE);
         }
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        Toast.makeText(getApplicationContext(),
+                "To change between patterns, flick your phone!",
+                Toast.LENGTH_LONG).show();
     }
 
     @Override
